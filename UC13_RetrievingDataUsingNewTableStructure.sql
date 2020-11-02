@@ -93,3 +93,89 @@ select type,count(*)
 from AddressBook
 group by type;
 
+--Creating different entities in the table and doing normalization UC12
+--creating table typeofcontacts
+create table TypesOfContacts
+(
+typeid int primary key ,
+typename varchar(50) not null);
+--inserting data into type of contacts
+insert into Typesofcontacts
+values
+(1,'Family'),
+(2,'Friends'),
+(3,'Business');
+select * from Typesofcontacts;
+--altering address book to add contact id
+alter table addressbook
+add contactid int primary key identity(1,1);
+
+select * from addressbook;
+--creating table address book which will contain address book names
+create table AddressBookNames
+(addressBookId int primary key identity(1,1),
+addressBookName varchar(50) not null );
+--inserting data into address book names
+insert into AddressBooknames
+values
+('A'),('B'),('C');
+
+select * from AddressBookNames;
+--creating table address book names mapper which will contain contact id and address book names id
+create table addressbookMapper
+(contactid int not null, addressbookid int not null);
+--inserting data into address book mapper id
+insert into addressbookMapper
+values
+(1,1),(2,1),(3,2);
+--deleting redundant row from address book
+delete from AddressBook
+where firstName='Mahak' and contactid=4;
+
+select * from AddressBook;
+select a.firstname,a.phoneNumber,a.city,a.state,a.eMail,b.addressbookname
+from AddressBook a
+join addressbookMapper d
+on a.contactid= d.contactId
+join AddressBookNames b
+on b.addressBookId= d.addressbookId
+--creating type mapper table to map types names to contacts
+create table typeMapper
+(contactid int not null,typeid int not null);
+--inserting data into type mapper
+insert into typemapper
+values (1,1),(2,2),(3,2),(2,3);
+
+select a.firstname,tc.typename
+from addressbook a
+join typeMapper t
+on t.contactid= a.contactid
+join TypesOfContacts tc
+on tc.typeid= t.typeid;
+
+--Retrieving data using new table structure UC13
+--UC6
+select firstname,lastname,city from AddressBook
+where city='Hisar';
+
+--UC7
+select city,count(*)
+from addressbook
+where city='Hisar'
+group by city;
+
+--UC8
+select * from 
+addressbook
+where city='Hisar'
+order by firstname,lastname;
+
+--UC10
+select * from addressbook;
+
+select typename,count(*) numberOfContactPersons from addressbook a
+join typeMapper tm
+on tm.contactid= a.contactid
+join TypesOfContacts t
+on t.typeid= tm.typeid
+group by t.typename;
