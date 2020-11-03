@@ -179,3 +179,20 @@ on tm.contactid= a.contactid
 join TypesOfContacts t
 on t.typeid= tm.typeid
 group by t.typename;
+
+use AddressBookServiceDataBase
+
+alter table addressbook
+drop column type;
+
+alter table addressBookMapper
+add constraint foreignkey1 Foreign key(addressbookid) references addressbooknames(addressbookid);
+
+alter table addressBookMapper
+add constraint foreignkey2 Foreign key(contactid) references addressbook(contactid);
+
+alter table typeMapper
+add constraint foreignkey3 Foreign key(contactid) references addressbook(contactid);
+
+alter table typeMapper
+add constraint foreignkey5 foreign key(typeid) references typesofcontacts(typeid);
